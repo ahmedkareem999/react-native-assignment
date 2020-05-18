@@ -13,8 +13,15 @@ class Inputs extends React.Component {
         is_potentially_hazardous_asteroid: '',
         AsteroidID: ''
       }
+      this.getValue = this.getValue.bind(this);
     }
 
+  getValue() {
+    return(
+      this.state.name
+
+    )
+  }
   onChangeText = (text) => {
     this.setState({AsteroidID: text})
 
@@ -64,6 +71,7 @@ class Inputs extends React.Component {
               console.log(res.nasa_jpl_url);
               console.log(res.is_potentially_hazardous_asteroid);
               console.log(this.state.AsteroidID);
+              console.log(this.state.name);
             })
 
           }
