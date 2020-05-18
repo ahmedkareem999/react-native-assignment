@@ -1,9 +1,13 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import Inputs from './app/components/inputform.js'
+
+import AppNavigator from './app/components/appnavigator.js'
+
+
+
 const App = () => {
   return (
-      <Inputs/>
+      <AppNavigator/>
   )
 }
 export default App

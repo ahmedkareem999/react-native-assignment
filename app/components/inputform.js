@@ -1,17 +1,24 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import {Container, Button, Header, Form, Item, Input,Content,Right, Left, Label, Text} from 'native-base';
+import {StackNavigator} from 'react-navigation';
 class Inputs extends React.Component {
-  state = {
-    AsteroidID: '',
-    name:'',
-    nasa_jpl_url: '',
-    is_potentially_hazardous_asteroid: '',
-    nasaList: [],
-    astroidList: [],
-    loading: true
-  };
 
+  constructor(props) {
+    super(props);
+    this.shuffleArray = this.shuffleArray.bind(this);
+      this.state = {
+        name: '',
+        nasa_jpl_url: '',
+        is_potentially_hazardous_asteroid: '',
+        AsteroidID: ''
+      }
+    }
+
+  onChangeText = (text) => {
+    this.setState({AsteroidID: text})
+
+  }
   onSubmit = () => {
     if(this.state.AsteroidID != " ") {
       this.componentDidMount();
@@ -20,45 +27,109 @@ class Inputs extends React.Component {
     }
   }
 
-  async componentDidMount() {
-        try {
-            const nasaApiCall = await fetch('https://api.nasa.gov/neo/rest/v1/neo/{{AsteroidID}}?api_key=PdoIS2buirjk1WvbgzMWpj02QHvu3a41bupz7p2G');
-            const nasa = await nasaApiCall.json();
-            const asteroidList = JSON.stringify(nasa);
-            const nasaList = [];
-            nasaList.add(asteroidList.name);
-            nasaList.add(asteroidList.nasa_jpl_url);
-            nasaList.add(asteroidList.is_potentially_hazardous_asteroid);
-            this.setState({nasaList: nasaList, loading: false});
-        } catch(err) {
-            console.log("Error fetching data-----------", err);
-        }
+  shuffleArray(array) {
+    try {
+      let i = array.length - 1;
+      for (; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        const temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
+      }
+      return array;
+    } catch(err) {
+      console.err(err);
     }
 
+  };
+  async componentDidMount() {
+        try {
+          const api_key = "api_key=PdoIS2buirjk1WvbgzMWpj02QHvu3a41bupz7p2G";
+          const astID = this.state.AsteroidID;
+          const api = {
+            nasaCall() {
+              const uri = "https://api.nasa.gov/neo/rest/v1/neo";
 
-  onChangeText = (text) => {
-    this.setState({AsteroidID: text})
-  }
+              return fetch(`${uri}/${astID}?${api_key}`).then((res) => res.json());
+            }
+          }
+            api.nasaCall().then((res) => {
+              this.setState({
+                name: res.name,
+                nasa_jpl_url: res.nasa_jpl_url,
+                is_potentially_hazardous_asteroid: res.is_potentially_hazardous_asteroid,
+              })
+
+              console.log(res.name);
+              console.log(res.nasa_jpl_url);
+              console.log(res.is_potentially_hazardous_asteroid);
+              console.log(this.state.AsteroidID);
+            })
+
+          }
+            catch(err) {
+              console.error(err);
+            }
+    }
 
   async randomAsteroid() {
     try {
-        const randomApiCall = await fetch('https://api.nasa.gov/neo/rest/v1/neo/browse?api_key=PdoIS2buirjk1WvbgzMWpj02QHvu3a41bupz7p2G');
-        const asteroid = await randomApiCall.json();
-        const nasaAsteroidList = JSON.stringify(asteroid);
-        const asteroidRandID = Math.floor(Math.random() * nasaAsteroidList.length);
 
-        const astApiCall = await fetch('https://api.nasa.gov/neo/rest/v1/neo/browse?api_key=PdoIS2buirjk1WvbgzMWpj02QHvu3a41bupz7p2G');
-        const astRand = await astApiCall.json();
-        const astRandList = JSON.stringify(astRand);
-        const astroidList = [];
-        astroidList.add(astRandList.name);
-        astroidList.add(astRandList.nasa_jpl_url);
-        astroidList.add(astRandList.is_potentially_hazardous_asteroid);
-        this.setState({astroidList: astroidList, loading: false});
+      const api1 = {
+
+        nasaCall1() {
+          const urll = "https://api.nasa.gov/neo/rest/v1/neo/browse";
+          const url2 = "https://api.nasa.gov/neo/rest/v1/neo";
+          const api_key = "api_key=PdoIS2buirjk1WvbgzMWpj02QHvu3a41bupz7p2G";
+          //return fetch(`${urll}/?${api_key}`).then((res1) => res1.json());
+          //console.log("this is random" + res1.near_earth_objects[0].id);
+          //return fetch(`${urll}/?${api_key}`).then((res1) => res1.json());
+
+          const randomArray = fetch(`${urll}/?${api_key}`).then((res1) => res1.json());
+          const shuffledRandomArray = this.shuffleArray(randomArray.near_earth_objects);
+
+          return fetch(`${url2}/${shuffledRandomArray}?${api_key}`).then((res2) => res2.json());
+          console.log("this is random" + res1.near_earth_objects);
+        // },
+        // nasaCall2() {
+        //   const uri1 = "https://api.nasa.gov/neo/rest/v1/neo";
+        //   const api_key = "api_key=PdoIS2buirjk1WvbgzMWpj02QHvu3a41bupz7p2G"
+        //   return fetch(`${uri1}/${api_key}?${api_key}`).then((res2) => res2.json());
+        // }
+      }
+    }
+      api1.nasaCall1().then((res1) => {
+        this.setState({
+          name: res1.name,
+          nasa_jpl_url: res1.nasa_jpl_url,
+          is_potentially_hazardous_asteroid: res1.is_potentially_hazardous_asteroid,
+        })
+
+        console.log(randomArray);
+
+          console.log(res1.near_earth_objects);
+        console.log(res1.name);
+        console.log(res1.nasa_jpl_url);
+        console.log(res1.is_potentially_hazardous_asteroid);
+      })
+        // const randomApiCall = await fetch('https://api.nasa.gov/neo/rest/v1/neo/3542519?api_key=PdoIS2buirjk1WvbgzMWpj02QHvu3a41bupz7p2G');
+        // const asteroid = await randomApiCall.json();
+        // const nasaAsteroidList = JSON.stringify(asteroid);
+        // const asteroidRandID = Math.floor(Math.random() * nasaAsteroidList.length);
+        //
+        // const astApiCall = await fetch('https://api.nasa.gov/neo/rest/v1/neo/3542519?api_key=PdoIS2buirjk1WvbgzMWpj02QHvu3a41bupz7p2G');
+        // const astRand = await astApiCall.json();
+        // const astRandList = JSON.stringify(astRand);
+        // // const astroidList = [];
+        // // astroidList.add(astRandList.name);
+        // // astroidList.add(astRandList.nasa_jpl_url);
+        // // astroidList.add(astRandList.is_potentially_hazardous_asteroid);
+        // this.setState({astroidList: astRandList, loading: false});
     } catch(err) {
         console.log("Error fetching data-----------", err);
     }
 }
+
 
   render() {
   return (
@@ -71,11 +142,17 @@ class Inputs extends React.Component {
               <Input placeholder=" Enter Asteroid ID" style = {styles.input} onChangeText={this.onChangeText.bind(this)}/>
             </Item>
 
-            <Button small style = {styles.submitButton} onPress={() => this.onSubmit()}>
+            <Button small style = {styles.submitButton} onPress={() => {
+              this.onSubmit()
+              this.props.navigation.navigate("Asteroids");
+            }}>
              <Text>Submit</Text>
             </Button>
 
-            <Button small style={styles.randomAsteroidButton} onPress= {() => this.randomAsteroid()}>
+            <Button small style={styles.randomAsteroidButton} onPress= {() => {
+              this.randomAsteroid()
+              this.props.navigation.navigate("RandomAsteroids");
+            }}>
              <Text>Random Asteroid</Text>
             </Button>
           </Form>
